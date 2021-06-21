@@ -20,14 +20,14 @@ class Generator extends React.Component {
       // jsonData is stored as array of addresses(strings), their position in the array will be used as their eventual "num" value
       // json export format => [{"name": "<address string>", "value": 255, "num": 0}, ...] value property sets the default brightness, this can be 255 for all.
       jsonData: ["b-01-01", "b-01-02", "b-01-03"],
-      blockInput: {name: "", numToAdd: null, startNum: null},
+      blockInput: {name: "name", numToAdd: 1, startNum: 0},
       sequenceInput: {address: "", floorStart: 1, floorEnd: 7, apartmentSequence: [1,3,5,7]},
     }
     // Bind here...
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleExecuteBlock = this.handleExecuteBlock.bind(this);
     this.handleChangeStartNum = this.handleChangeStartNum.bind(this);
-    this.handleChangeNumToAdd = this.handleChangeNumToAdd(this);
+    this.handleChangeNumToAdd = this.handleChangeNumToAdd.bind(this);
   }
 
   validateNumeric(input) {
@@ -39,29 +39,37 @@ class Generator extends React.Component {
   };
 
   validateNameLength(input) {
-    if(input === null || input.length < 10) {
+    if(input === null || input.length < 7) {
       return input
     } else {
-      return input.substring(0, 10)
+      return input.substring(0, 7)
     }
   }
 
+  validateNonZero(input) {
+    if(input === null) {
+      return null
+    } else {
+      return input
+    }
+  }
+  // Input handler for Block Add 'startNum'
   handleChangeStartNum(event) {
     // Deep clone of state object made with stringify
-    let stateObjectClone = JSON.parse(JSON.stringify(this.state.blockInput));
+    let blockStateObjectClone = JSON.parse(JSON.stringify(this.state.blockInput));
     // call to numeric validation function  
-    stateObjectClone['startNum'] = this.validateNumeric(event.target.value)
+    blockStateObjectClone['startNum'] = this.validateNumeric(event.target.value)
     // validate that value is within max of array length
     // this will probably happen at execution -> if the value is out of range the LEDs get added at the end of the array
     // if(stateObjectClone['startNum'] > this.state.jsonData.length) {
     //   stateObjectClone['startNum'] = this.state.jsonData.length
     // }
     this.setState({
-      blockInput: stateObjectClone,
+      blockInput: blockStateObjectClone,
     });
   }
 
-  // Method to update input for 'name' as input element is updated
+  // Input handler for Block Add 'name'
   handleChangeName(event) {
     let stateObjectClone = JSON.parse(JSON.stringify(this.state.blockInput));
     stateObjectClone['name'] = this.validateNameLength(event.target.value)
@@ -70,27 +78,54 @@ class Generator extends React.Component {
     });
   }
 
+  // Input handler for Block Add 'numToAdd'
   handleChangeNumToAdd(event) {
     let stateObjectClone = JSON.parse(JSON.stringify(this.state.blockInput));
-    stateObjectClone['numToAdd'] = this.validateNumeric(event.target.value)
+    stateObjectClone['numToAdd'] = this.validateNumeric(event.target.value);
     this.setState({
       blockInput: stateObjectClone,
     });
   }
 
-  // Method to update state 'jsonData' to include new name(s)
+  blockArray(name, ledCount) {
+    let output = [];
+    for(let i = 0; i < ledCount; i++) {
+      output.push(name)
+    }
+    return output
+  }
+
+  // Method to update state 'jsonData' to include new block name(s)
   handleExecuteBlock(event) {
     // This call prevents the submit button's default behaviour of reloading the page
     event.preventDefault()
     // Deep copy of state 'jsonData'
-    const nameArray = [...this.state.jsonData]
-    // new name added at end of array
-    // !!! needs changing to add name(s) at the specified index
-    nameArray.push(this.state.blockInput['name'])
-    this.setState((state) => ({
-      jsonData: nameArray
-    }));
+    let nameArray = [...this.state.jsonData];
+    let stateObjectClone = JSON.parse(JSON.stringify(this.state.blockInput));
+    
+    // numToAdd null value caught
+    if(stateObjectClone['numToAdd'] === null) stateObjectClone['numToAdd'] = 0;
+
+    let arrayToAdd = this.blockArray(stateObjectClone['name'], stateObjectClone['numToAdd']);
+    
+
+    //
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // Needs some review to work as expected
+    // 
+    if(stateObjectClone['startNum'] === null || stateObjectClone['startNum'] > nameArray.length) {
+      // new names addes at end of
+      nameArray = [...nameArray, ...arrayToAdd];
+    } else {
+      nameArray.splice(this.state.blockInput['startNum'], 0, ...arrayToAdd);
+    }
+
+    this.setState({
+      jsonData: nameArray,
+      blockInput: {name: "name", numToAdd: 1, startNum: 0},
+    });
   }
+
   render() {
     return (
       <div>
@@ -102,7 +137,7 @@ class Generator extends React.Component {
               <InputGroup.Prepend>
                 <InputGroup.Text>START AT LED NUMBER</InputGroup.Text>
               </InputGroup.Prepend>
-              <FormControl placeholder='Leave blank to add at end, value greater than last led number will be ignored and name added at end'
+              <FormControl placeholder=''
                            value={this.state.blockInput['startNum']}
                            onChange={this.handleChangeStartNum.bind(this)}/>
             </InputGroup>
@@ -111,32 +146,24 @@ class Generator extends React.Component {
               <InputGroup.Prepend>
                 <InputGroup.Text>NAME</InputGroup.Text>
               </InputGroup.Prepend>
-              <FormControl  placeholder='Required, 10 characters max.' 
+              <FormControl  placeholder='' 
                             value={this.state.blockInput['name']} 
                             onChange={this.handleChangeName.bind(this)}/>
             </InputGroup>
 
             <InputGroup className="mb-3">
               <InputGroup.Prepend>
-                <InputGroup.Text>Number of LEDs to add</InputGroup.Text>
-              </InputGroup.Prepend>
-              <FormControl  placeholder='Required, 10 characters max.' 
-                            value={this.state.blockInput['numToAdd']} 
-                            onChange={this.handleChangeNumToAdd.bind(this)}/>
-            </InputGroup>
-
-            {/* <InputGroup className="mb-3">
-              <InputGroup.Prepend>
                 <InputGroup.Text>NUMBER OF LEDs TO ADD</InputGroup.Text>
               </InputGroup.Prepend>
-              <FormControl placeholder='Required'
+              <FormControl placeholder=''
                            value={this.state.blockInput['numToAdd']}
-                           onChange={this.handleChangeNumOfLedToAdd.bind(this)}/>
-            </InputGroup> */}
+                           onChange={this.handleChangeNumToAdd.bind(this)}/>
+            </InputGroup>
             
             <ButtonGroup>
               <Button onClick={this.handleExecuteBlock} variant="primary">Add Names</Button>{' '}
               <Button variant="secondary">Clear Form</Button>
+              <Button variant="warning">undo?</Button>
             </ButtonGroup>
           </Tab>
           <Tab eventKey="add-sequence-of-names" title="Add Sequence of Names">
