@@ -122,7 +122,7 @@ class Generator extends React.Component {
 
     this.setState({
       jsonData: nameArray,
-      blockInput: {name: "name", numToAdd: 1, startNum: 0},
+      blockInput: {name: "name", numToAdd: 1, startNum: nameArray.length},
     });
   }
 
