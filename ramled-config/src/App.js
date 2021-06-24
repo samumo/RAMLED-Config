@@ -10,7 +10,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Alert from 'react-bootstrap/Alert';
 import Table from 'react-bootstrap/Table';
 
-// document.body.style = 'background: black;';
+//  document.body.style = 'background: black;';
 
 class Generator extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class Generator extends React.Component {
       jsonData: ["b-01-01", "b-01-02", "b-01-03"],
       previousJsonData: ["b-01-01", "b-01-02", "b-01-03"],
       blockInput: {name: "a-01-01", numToAdd: 1, startNum: 0},
-      sequenceInput: {startNum: 0, separator: '-', building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: [1,3,5,7]},
+      sequenceInput: {startNum: 0, separator: '-', building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: [1,2,3,4]},
     }
     // Bindings
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -34,6 +34,16 @@ class Generator extends React.Component {
     this.handleChangeSequenceBuilding = this.handleChangeSequenceBuilding.bind(this);
     this.handleChangeSequenceFloorStart = this.handleChangeSequenceFloorStart.bind(this);
     this.handleChangeSequenceFloorEnd = this.handleChangeSequenceFloorEnd.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets0.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets1.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets2.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets4.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets5.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets6.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets7.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets8.bind(this);
+    this.handleChangeSequenceApartmnets = this.handleChangeSequenceApartmnets9.bind(this);
+    this.handleExecuteSequence = this.handleExecuteSequence.bind(this);
   }
 
   validateNumeric(input) {
@@ -178,7 +188,7 @@ class Generator extends React.Component {
   }
 
     // validate building name to 2 numeric characters
-    validateFloorStartEnd(input) {
+    validateTwoNumeric(input) {
       if(input === null) {
         return input;
       } else {
@@ -191,7 +201,7 @@ class Generator extends React.Component {
     // Deep clone of state object made with stringify
     let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
     // call to numeric validation function  
-    sequenceStateObjectClone['floorStart'] = this.validateFloorStartEnd(event.target.value);
+    sequenceStateObjectClone['floorStart'] = this.validateTwoNumeric(event.target.value);
     this.setState({
       sequenceInput: sequenceStateObjectClone,
     });
@@ -202,13 +212,107 @@ class Generator extends React.Component {
     // Deep clone of state object made with stringify
     let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
     // call to numeric validation function  
-    sequenceStateObjectClone['floorEnd'] = this.validateFloorStartEnd(event.target.value);
+    sequenceStateObjectClone['floorEnd'] = this.validateTwoNumeric(event.target.value);
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // handlers for sequence input. This should be better -> one method which accepts the neccecary params rather than 10 different methods
+  handleChangeSequenceApartmnets0(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(0, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets1(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(1, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets2(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(2, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets3(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(3, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets4(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(4, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets5(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(5, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets6(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(6, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets7(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(7, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets8(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(8, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
+    this.setState({
+      sequenceInput: sequenceStateObjectClone,
+    });
+  }
+  handleChangeSequenceApartmnets9(event) {
+    let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    let addressArray = [...sequenceStateObjectClone['apartmentSequence']];
+    addressArray.splice(9, 1, this.validateTwoNumeric(event.target.value));
+    sequenceStateObjectClone['apartmentSequence'] = addressArray;
     this.setState({
       sequenceInput: sequenceStateObjectClone,
     });
   }
 
-
+  handleExecuteSequence(event) {
+    
+  }
 
   render() {
     const btnBlockAdd = <Button onClick={this.handleExecuteBlock} variant="success">Add Names</Button>;
@@ -289,7 +393,26 @@ class Generator extends React.Component {
               <InputGroup.Prepend>
                 <InputGroup.Text>APARTMENT NUMBER SEQUENCE, SEPARATED WITH COMMAS ','</InputGroup.Text>
               </InputGroup.Prepend>
-              <FormControl />
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][0]}
+                                  onChange={this.handleChangeSequenceApartmnets0.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][1]}
+                                  onChange={this.handleChangeSequenceApartmnets1.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][2]}
+                                  onChange={this.handleChangeSequenceApartmnets2.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][3]}
+                                  onChange={this.handleChangeSequenceApartmnets3.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][4]}
+                                  onChange={this.handleChangeSequenceApartmnets4.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][5]}
+                                  onChange={this.handleChangeSequenceApartmnets5.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][6]}
+                                  onChange={this.handleChangeSequenceApartmnets6.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][7]}
+                                  onChange={this.handleChangeSequenceApartmnets7.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][8]}
+                                  onChange={this.handleChangeSequenceApartmnets8.bind(this)}/>
+              <FormControl value={this.state.sequenceInput['apartmentSequence'][9]}
+                                  onChange={this.handleChangeSequenceApartmnets9.bind(this)}/>
             </InputGroup>
             <ButtonGroup>
               {btnSeqAdd}
