@@ -22,6 +22,7 @@ class Generator extends React.Component {
       previousJsonData: ["b-01-01", "b-01-02", "b-01-03"],
       blockInput: {name: "a-01-01", numToAdd: 1, startNum: 0},
       sequenceInput: {startNum: 0, building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: [1,2,3,4]},
+      jsonDataTest: [],
     }
     // Bindings
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -312,15 +313,42 @@ class Generator extends React.Component {
 
   handleExecuteSequence(event) {
     const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
-    const outputArray = [...this.state.jsonData];
+    const outputNameArray = [...this.state.jsonData];
+
+    function floorArrayGen(start, end) {
+      let floorArray = [];
+      for(let i = start; i <= end; i++) {
+        if(i < 10) {
+          floorArray.push('0' + i);
+        } else {
+          floorArray.push(i);
+        }
+      }
+      return floorArray;
+    }
+    
     if(sequenceStateObjectClone['building'] === null) {
-      this.setState({jsonData: outputArray});
+      this.setState({jsonData: outputNameArray});
     } else if(sequenceStateObjectClone['floorStart'] === null) {
-      this.setState({jsonData: outputArray});
+      this.setState({jsonData: outputNameArray});
     } else if(sequenceStateObjectClone['floorEnd'] === null) {
-    this.setState({jsonData: outputArray});
+    this.setState({jsonData: outputNameArray});
     } else if(sequenceStateObjectClone['apartmentSequence'].length === 0) {
-      this.setState({jsonData: outputArray})
+      this.setState({jsonData: outputNameArray})
+    } else {
+      if(Number(sequenceStateObjectClone['floorStart']) < Number(sequenceStateObjectClone['floorEnd'])) {
+        let floorArray = []
+        for(let i = sequenceStateObjectClone['floorStart']; i <= sequenceStateObjectClone['floorEnd']; i++) {
+          if(i < 10) {
+            floorArray.push('0' + i);
+          } else {
+            floorArray.push(i);
+          }
+        }
+        this.setState({
+          jsonDataTest: floorArray
+        })
+      }
     }
   }
 
@@ -401,7 +429,7 @@ class Generator extends React.Component {
 
             <InputGroup className="mb-3">
               <InputGroup.Prepend>
-                <InputGroup.Text>APARTMENT NUMBER SEQUENCE, SEPARATED WITH COMMAS ','</InputGroup.Text>
+                <InputGroup.Text>APARTMENTS</InputGroup.Text>
               </InputGroup.Prepend>
               <FormControl value={this.state.sequenceInput['apartmentSequence'][0]}
                                   onChange={this.handleChangeSequenceApartments0.bind(this)}/>
@@ -424,6 +452,9 @@ class Generator extends React.Component {
               <FormControl value={this.state.sequenceInput['apartmentSequence'][9]}
                                   onChange={this.handleChangeSequenceApartments9.bind(this)}/>
             </InputGroup>
+            
+            <Alert variant="secondary">floor arrary test - {this.state.jsonDataTest}</Alert>
+
             <ButtonGroup>
               {btnSeqAdd}
               {btnUndo}
