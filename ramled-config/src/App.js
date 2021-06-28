@@ -45,7 +45,9 @@ class Generator extends React.Component {
     this.handleChangeSequenceApartments = this.handleChangeSequenceApartments8.bind(this);
     this.handleChangeSequenceApartments = this.handleChangeSequenceApartments9.bind(this);
     this.handleExecuteSequence = this.handleExecuteSequence.bind(this);
-    this.insuficiantData = this.insuficiantData.bind(this);
+    this.insufficientData = this.insufficientData.bind(this);
+    this.sequenceGenerator = this.sequenceGenerator.bind(this);
+    this.sequenceGeneratorDescending = this.sequenceGeneratorDescending.bind(this);
   }
 
   validateNumeric(input) {
@@ -312,56 +314,85 @@ class Generator extends React.Component {
     });
   }
 
+  insufficientData(array) {
+    this.setState({jsonDataTest: array});
+  };
 
-  insuficiantData() {
-    let output = []
-    this.setState({jsonDataTest: output});
+  sequenceGenerator(building, start, end, apartments) {
+    let floorArray = [];
+    for(let i = start; i <= end; i++) {
+      for(let j = 0; j < apartments.length; j++) {
+        if(i < 1) {
+        floorArray.push(building + '00-' + apartments[j]);
+        } else if(i < 10) {
+          floorArray.push(building + '0' + i + '-' + apartments[j]);
+        } else {
+          floorArray.push(building + i + '-' + apartments[j]);
+        }
+      }
+    }
+    return floorArray;
+  };
+
+  sequenceGeneratorDescending(building, start, end, apartments) {
+    let floorArray = [];
+    for(let i = start; i >= end; i--) {
+      for(let j = 0; j < apartments.length; j++) {
+        if(i < 1) {
+        floorArray.push(building + '00-' + apartments[j]);
+        } else if(i < 10) {
+          floorArray.push(building + '0' + i + '-' + apartments[j]);
+        } else {
+          floorArray.push(building + i + '-' + apartments[j]);
+        }
+      }
+    }
+    return floorArray;
   };
 
   handleExecuteSequence(event) {
+    // This call prevents the submit button's default behaviour of reloading the page
+    event.preventDefault()
     const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
-    // const outputNameArray = [...this.state.jsonData];
-    // const apartmentArray = Array(sequenceStateObjectClone['apartmentSequence']);
-    // const building = sequenceStateObjectClone['building'] + '-';
-
-    function floorArrayGen(building, start, end, apartments) {
-      let floorArray = [];
-      for(let i = start; i <= end; i++) {
-        for(let j = 0; j < apartments.length; j++) {
-          if(i < 1) {
-          floorArray.push(building + '00-' + apartments[j]);
-          } else if(i < 10) {
-            floorArray.push(building + '0' + i + '-' + apartments[j]);
-          } else {
-            floorArray.push(building + i + '-' + apartments[j]);
-          }
-        }
-      }
-
-      return floorArray;
-    };
+    // Deep working copy of state 'jsonData'
+    let nameArray = [...this.state.jsonData];
+    let arrayToAdd = [];
 
     if(sequenceStateObjectClone['building'].length === 0) {
-      this.insuficiantData();
+      this.insufficientData(arrayToAdd);
     } else if(sequenceStateObjectClone['floorStart'].length === 0) {
-      this.insuficiantData();
+      this.insufficientData(arrayToAdd);
     } else if(sequenceStateObjectClone['floorEnd'].length === 0) {
-      this.insuficiantData();
+      this.insufficientData(arrayToAdd);
     } else if(Array(sequenceStateObjectClone['apartmentSequence']).length < 1) {
-      this.insuficiantData();
+      this.insufficientData(arrayToAdd);
     } else {
       if(Number(sequenceStateObjectClone['floorStart']) < Number(sequenceStateObjectClone['floorEnd'])) {
-        this.setState({
-          jsonDataTest: floorArrayGen(sequenceStateObjectClone['building'] + '-', sequenceStateObjectClone['floorStart'], sequenceStateObjectClone['floorEnd'], sequenceStateObjectClone['apartmentSequence'])
-        })
+        arrayToAdd = this.sequenceGenerator(sequenceStateObjectClone['building'] + '-', 
+                                               sequenceStateObjectClone['floorStart'], 
+                                               sequenceStateObjectClone['floorEnd'], 
+                                               sequenceStateObjectClone['apartmentSequence'])
       } else {
-        this.setState({
-          jsonDataTest: floorArrayGen(sequenceStateObjectClone['floorEnd'], sequenceStateObjectClone['floorStart']).reverse()  
-        })
+        arrayToAdd = this.sequenceGeneratorDescending(sequenceStateObjectClone['building'] + '-', 
+                                                      sequenceStateObjectClone['floorStart'], 
+                                                      sequenceStateObjectClone['floorEnd'], 
+                                                      sequenceStateObjectClone['apartmentSequence'])        
+        
       }
-    }
-  }
+    };
 
+    if(Number(sequenceStateObjectClone['startNum']) > nameArray.length) {
+      nameArray = [...nameArray, ...arrayToAdd];
+    } else {
+      // default behaviour of adding new array at specified index
+      nameArray.splice(Number(sequenceStateObjectClone['startNum']), 0, ...arrayToAdd);
+    }
+    let jsonDataPrevious = [...this.state.jsonData];
+    this.setState({
+      previousJsonData: jsonDataPrevious,
+      jsonData: nameArray,
+    });
+  }
 
   render() {
     const btnBlockAdd = <Button onClick={this.handleExecuteBlock} variant="success">Add Names</Button>;
