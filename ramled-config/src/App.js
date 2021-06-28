@@ -312,45 +312,42 @@ class Generator extends React.Component {
   }
 
   handleExecuteSequence(event) {
-    const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
-    const outputNameArray = [...this.state.jsonData];
+  const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+  const outputNameArray = [...this.state.jsonData];
 
-    function floorArrayGen(start, end) {
-      let floorArray = [];
-      for(let i = start; i <= end; i++) {
-        if(i < 10) {
-          floorArray.push('0' + i);
-        } else {
-          floorArray.push(i);
-        }
+  function floorArrayGen(start, end) {
+    let floorArray = [];
+    for(let i = start; i <= end; i++) {
+      if(i < 10) {
+        floorArray.push('0' + i);
+      } else {
+        floorArray.push(i);
       }
-      return floorArray;
     }
+    return floorArray;
+  }
     
-    if(sequenceStateObjectClone['building'] === null) {
+    if(sequenceStateObjectClone['building'] === '') {
       this.setState({jsonData: outputNameArray});
-    } else if(sequenceStateObjectClone['floorStart'] === null) {
+    } else if(isNaN(sequenceStateObjectClone['floorStart'])) {
       this.setState({jsonData: outputNameArray});
-    } else if(sequenceStateObjectClone['floorEnd'] === null) {
+    } else if(sequenceStateObjectClone['floorEnd'] === 3) {
     this.setState({jsonData: outputNameArray});
     } else if(sequenceStateObjectClone['apartmentSequence'].length === 0) {
       this.setState({jsonData: outputNameArray})
     } else {
       if(Number(sequenceStateObjectClone['floorStart']) < Number(sequenceStateObjectClone['floorEnd'])) {
-        let floorArray = []
-        for(let i = sequenceStateObjectClone['floorStart']; i <= sequenceStateObjectClone['floorEnd']; i++) {
-          if(i < 10) {
-            floorArray.push('0' + i);
-          } else {
-            floorArray.push(i);
-          }
-        }
         this.setState({
-          jsonDataTest: floorArray
+          jsonDataTest: floorArrayGen(sequenceStateObjectClone['floorStart'], sequenceStateObjectClone['floorEnd'])
+        })
+      } else {
+        this.setState({
+          jsonDataTest: floorArrayGen(sequenceStateObjectClone['floorEnd'], sequenceStateObjectClone['floorStart']).reverse()  
         })
       }
     }
   }
+
 
   render() {
     const btnBlockAdd = <Button onClick={this.handleExecuteBlock} variant="success">Add Names</Button>;
@@ -453,7 +450,9 @@ class Generator extends React.Component {
                                   onChange={this.handleChangeSequenceApartments9.bind(this)}/>
             </InputGroup>
             
-            <Alert variant="secondary">floor arrary test - {this.state.jsonDataTest}</Alert>
+            <Alert variant="secondary">floor array test - {this.state.jsonDataTest}</Alert>
+            <Alert >{typeof this.state.sequenceInput['startNum']}</Alert>
+
 
             <ButtonGroup>
               {btnSeqAdd}
