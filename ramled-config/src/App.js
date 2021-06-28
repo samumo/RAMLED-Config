@@ -21,7 +21,7 @@ class Generator extends React.Component {
       jsonData: ["b-01-01", "b-01-02", "b-01-03"],
       previousJsonData: ["b-01-01", "b-01-02", "b-01-03"],
       blockInput: {name: "a-01-01", numToAdd: 1, startNum: 0},
-      sequenceInput: {startNum: 0, building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: [1,2,3,4]},
+      sequenceInput: {startNum: 0, building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: ['01','02','03','04']},
       jsonDataTest: [],
     }
     // Bindings
@@ -45,6 +45,7 @@ class Generator extends React.Component {
     this.handleChangeSequenceApartments = this.handleChangeSequenceApartments8.bind(this);
     this.handleChangeSequenceApartments = this.handleChangeSequenceApartments9.bind(this);
     this.handleExecuteSequence = this.handleExecuteSequence.bind(this);
+    this.insuficiantData = this.insuficiantData.bind(this);
   }
 
   validateNumeric(input) {
@@ -162,7 +163,7 @@ class Generator extends React.Component {
     // Deep clone of state object made with stringify
     let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
     // call to numeric validation function  
-    sequenceStateObjectClone['startNum'] = this.validateNumeric(event.target.value);
+    sequenceStateObjectClone['startNum'] = this.validateNumeric(event.target.value).toString();
     this.setState({
       sequenceInput: sequenceStateObjectClone,
     });
@@ -182,7 +183,7 @@ class Generator extends React.Component {
     // Deep clone of state object made with stringify
     let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
     // call to numeric validation function  
-    sequenceStateObjectClone['building'] = this.validateBuilding(event.target.value);
+    sequenceStateObjectClone['building'] = this.validateBuilding(event.target.value).toString();
     this.setState({
       sequenceInput: sequenceStateObjectClone,
     });
@@ -202,7 +203,7 @@ class Generator extends React.Component {
     // Deep clone of state object made with stringify
     let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
     // call to numeric validation function  
-    sequenceStateObjectClone['floorStart'] = this.validateTwoNumeric(event.target.value);
+    sequenceStateObjectClone['floorStart'] = this.validateTwoNumeric(event.target.value).toString();
     this.setState({
       sequenceInput: sequenceStateObjectClone,
     });
@@ -213,7 +214,7 @@ class Generator extends React.Component {
     // Deep clone of state object made with stringify
     let sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
     // call to numeric validation function  
-    sequenceStateObjectClone['floorEnd'] = this.validateTwoNumeric(event.target.value);
+    sequenceStateObjectClone['floorEnd'] = this.validateTwoNumeric(event.target.value).toString();
     this.setState({
       sequenceInput: sequenceStateObjectClone,
     });
@@ -311,30 +312,43 @@ class Generator extends React.Component {
     });
   }
 
-  handleExecuteSequence(event) {
-  const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
-  const outputNameArray = [...this.state.jsonData];
 
-  function floorArrayGen(start, end) {
-    let floorArray = [];
-    for(let i = start; i <= end; i++) {
-      if(i < 10) {
-        floorArray.push('0' + i);
-      } else {
-        floorArray.push(i);
+  insuficiantData() {
+    let output = []
+    this.setState({jsonDataTest: output});
+  };
+
+  handleExecuteSequence(event) {
+    const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
+    const outputNameArray = [...this.state.jsonData];
+    const apartmentArray = Array(sequenceStateObjectClone['apartmentSequence']);
+    const building = sequenceStateObjectClone['building'] + '-';
+
+    function floorArrayGen(start, end) {
+      let floorArray = [];
+      for(let i = start; i <= end; i++) {
+        for(let j = 0; j < sequenceStateObjectClone['apartmentSequence'].length; j++) {
+          if(i < 1) {
+          floorArray.push(building + '00-' + sequenceStateObjectClone['apartmentSequence'][j]);
+          } else if(i < 10) {
+            floorArray.push(building + '0' + i + '-' + sequenceStateObjectClone['apartmentSequence'][j]);
+          } else {
+            floorArray.push(building + i + '-' + sequenceStateObjectClone['apartmentSequence'][j]);
+          }
+        }
       }
-    }
-    return floorArray;
-  }
-    
-    if(sequenceStateObjectClone['building'] === '') {
-      this.setState({jsonData: outputNameArray});
-    } else if(isNaN(sequenceStateObjectClone['floorStart'])) {
-      this.setState({jsonData: outputNameArray});
-    } else if(sequenceStateObjectClone['floorEnd'] === 3) {
-    this.setState({jsonData: outputNameArray});
-    } else if(sequenceStateObjectClone['apartmentSequence'].length === 0) {
-      this.setState({jsonData: outputNameArray})
+
+      return floorArray;
+    };
+
+    if(sequenceStateObjectClone['building'].length === 0) {
+      this.insuficiantData();
+    } else if(sequenceStateObjectClone['floorStart'].length === 0) {
+      this.insuficiantData();
+    } else if(sequenceStateObjectClone['floorEnd'].length === 0) {
+      this.insuficiantData();
+    } else if(Array(sequenceStateObjectClone['apartmentSequence']).length < 1) {
+      this.insuficiantData();
     } else {
       if(Number(sequenceStateObjectClone['floorStart']) < Number(sequenceStateObjectClone['floorEnd'])) {
         this.setState({
@@ -451,8 +465,9 @@ class Generator extends React.Component {
             </InputGroup>
             
             <Alert variant="secondary">floor array test - {this.state.jsonDataTest}</Alert>
-            <Alert >{typeof this.state.sequenceInput['startNum']}</Alert>
-
+            <Alert >startNum - {typeof this.state.sequenceInput['startNum']}</Alert>
+            <Alert >floorStart - {typeof this.state.sequenceInput['floorStart']}  {this.state.sequenceInput['floorStart']}</Alert>
+            <Alert >apartmentSequence - {typeof this.state.sequenceInput['apartmentSequence']}  {this.state.sequenceInput['apartmentSequence']}</Alert>
 
             <ButtonGroup>
               {btnSeqAdd}
