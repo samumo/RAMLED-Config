@@ -320,20 +320,20 @@ class Generator extends React.Component {
 
   handleExecuteSequence(event) {
     const sequenceStateObjectClone = JSON.parse(JSON.stringify(this.state.sequenceInput));
-    const outputNameArray = [...this.state.jsonData];
-    const apartmentArray = Array(sequenceStateObjectClone['apartmentSequence']);
-    const building = sequenceStateObjectClone['building'] + '-';
+    // const outputNameArray = [...this.state.jsonData];
+    // const apartmentArray = Array(sequenceStateObjectClone['apartmentSequence']);
+    // const building = sequenceStateObjectClone['building'] + '-';
 
-    function floorArrayGen(start, end) {
+    function floorArrayGen(building, start, end, apartments) {
       let floorArray = [];
       for(let i = start; i <= end; i++) {
-        for(let j = 0; j < sequenceStateObjectClone['apartmentSequence'].length; j++) {
+        for(let j = 0; j < apartments.length; j++) {
           if(i < 1) {
-          floorArray.push(building + '00-' + sequenceStateObjectClone['apartmentSequence'][j]);
+          floorArray.push(building + '00-' + apartments[j]);
           } else if(i < 10) {
-            floorArray.push(building + '0' + i + '-' + sequenceStateObjectClone['apartmentSequence'][j]);
+            floorArray.push(building + '0' + i + '-' + apartments[j]);
           } else {
-            floorArray.push(building + i + '-' + sequenceStateObjectClone['apartmentSequence'][j]);
+            floorArray.push(building + i + '-' + apartments[j]);
           }
         }
       }
@@ -352,7 +352,7 @@ class Generator extends React.Component {
     } else {
       if(Number(sequenceStateObjectClone['floorStart']) < Number(sequenceStateObjectClone['floorEnd'])) {
         this.setState({
-          jsonDataTest: floorArrayGen(sequenceStateObjectClone['floorStart'], sequenceStateObjectClone['floorEnd'])
+          jsonDataTest: floorArrayGen(sequenceStateObjectClone['building'] + '-', sequenceStateObjectClone['floorStart'], sequenceStateObjectClone['floorEnd'], sequenceStateObjectClone['apartmentSequence'])
         })
       } else {
         this.setState({
