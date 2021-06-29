@@ -318,7 +318,7 @@ class Generator extends React.Component {
     this.setState({jsonDataTest: array});
   };
 
-  sequenceGenerator(building, start, end, apartments) {
+  sequenceGenerator(building, start, end, apartments,) {
     let floorArray = [];
     for(let i = start; i <= end; i++) {
       for(let j = 0; j < apartments.length; j++) {
@@ -357,6 +357,9 @@ class Generator extends React.Component {
     // Deep working copy of state 'jsonData'
     let nameArray = [...this.state.jsonData];
     let arrayToAdd = [];
+    // array of apartments stripped of empty strings
+    let cleanApartmentArr = [...sequenceStateObjectClone['apartmentSequence']];
+    cleanApartmentArr = cleanApartmentArr.filter(e => String(e).trim());
 
     if(sequenceStateObjectClone['building'].length === 0) {
       this.insufficientData(arrayToAdd);
@@ -364,20 +367,19 @@ class Generator extends React.Component {
       this.insufficientData(arrayToAdd);
     } else if(sequenceStateObjectClone['floorEnd'].length === 0) {
       this.insufficientData(arrayToAdd);
-    } else if(Array(sequenceStateObjectClone['apartmentSequence']).length < 1) {
+    } else if(cleanApartmentArr.length < 1) {
       this.insufficientData(arrayToAdd);
     } else {
       if(Number(sequenceStateObjectClone['floorStart']) < Number(sequenceStateObjectClone['floorEnd'])) {
         arrayToAdd = this.sequenceGenerator(sequenceStateObjectClone['building'] + '-', 
                                                sequenceStateObjectClone['floorStart'], 
                                                sequenceStateObjectClone['floorEnd'], 
-                                               sequenceStateObjectClone['apartmentSequence'])
+                                               cleanApartmentArr)
       } else {
         arrayToAdd = this.sequenceGeneratorDescending(sequenceStateObjectClone['building'] + '-', 
                                                       sequenceStateObjectClone['floorStart'], 
                                                       sequenceStateObjectClone['floorEnd'], 
-                                                      sequenceStateObjectClone['apartmentSequence'])        
-        
+                                                      cleanApartmentArr)        
       }
     };
 
