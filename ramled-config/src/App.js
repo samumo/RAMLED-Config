@@ -9,8 +9,13 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Alert from 'react-bootstrap/Alert';
 import Table from 'react-bootstrap/Table';
+import { saveAs } from 'file-saver';
+import Form from 'react-bootstrap/Form';
+import bsCustomFileInput from 'bs-custom-file-input'
+
 
 //  document.body.style = 'background: black;';
+
 
 class Generator extends React.Component {
   constructor(props) {
@@ -22,7 +27,7 @@ class Generator extends React.Component {
       previousJsonData: ["b-01-01", "b-01-02", "b-01-03"],
       blockInput: {name: "a-01-01", numToAdd: 1, startNum: 0},
       sequenceInput: {startNum: 0, building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: ['01','02','03','04']},
-      jsonDataTest: [],
+      testImport: []
     }
     // Bindings
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -48,6 +53,8 @@ class Generator extends React.Component {
     this.insufficientData = this.insufficientData.bind(this);
     this.sequenceGenerator = this.sequenceGenerator.bind(this);
     this.sequenceGeneratorDescending = this.sequenceGeneratorDescending.bind(this);
+    this.handleExport = this.handleExport.bind(this);
+    this.handleImport = this.handleImport.bind(this);
   }
 
   validateNumeric(input) {
@@ -382,7 +389,6 @@ class Generator extends React.Component {
                                                       cleanApartmentArr)        
       }
     };
-
     if(Number(sequenceStateObjectClone['startNum']) > nameArray.length) {
       nameArray = [...nameArray, ...arrayToAdd];
     } else {
@@ -394,6 +400,30 @@ class Generator extends React.Component {
       previousJsonData: jsonDataPrevious,
       jsonData: nameArray,
     });
+  }
+
+  handleExport(event) {
+    // This call prevents the submit button's default behaviour of reloading the page
+    event.preventDefault()
+    // json export format => [{"name": "<address string>", "value": 255, "num": 0}, ...] value property sets the default brightness, this can be 255 for all.
+    const jsonData = [...this.state.jsonData];
+    let jsonOutput = [];
+
+    jsonData.forEach(function(element, index) {
+      const item = {name: element, value: 255, num: index};
+      jsonOutput.push(item);
+    })
+
+    jsonOutput = JSON.stringify(jsonOutput);
+
+    let blob = new Blob([...jsonOutput], {type: "text/plain;charset=utf-8"});
+    
+    saveAs(blob, "config.json");
+  }
+
+  handleImport(event){
+    const fileList = event.target.files;
+    this.setState({testImport: fileList})
   }
 
   render() {
@@ -496,11 +526,6 @@ class Generator extends React.Component {
               <FormControl value={this.state.sequenceInput['apartmentSequence'][9]}
                                   onChange={this.handleChangeSequenceApartments9.bind(this)}/>
             </InputGroup>
-            
-            <Alert variant="secondary">floor array test - {this.state.jsonDataTest}</Alert>
-            <Alert >startNum - {typeof this.state.sequenceInput['startNum']}</Alert>
-            <Alert >floorStart - {typeof this.state.sequenceInput['floorStart']}  {this.state.sequenceInput['floorStart']}</Alert>
-            <Alert >apartmentSequence - {typeof this.state.sequenceInput['apartmentSequence']}  {this.state.sequenceInput['apartmentSequence']}</Alert>
 
             <ButtonGroup>
               {btnSeqAdd}
@@ -515,8 +540,10 @@ class Generator extends React.Component {
                 <InputGroup.Text>LED NUMBER TO EDIT/DELETE</InputGroup.Text>
               </InputGroup.Prepend>
               <FormControl />
-              <Button variant="primary">Find LED name</Button>
-              <Button variant="danger">Delete name</Button>{' '}
+              <ButtonGroup>
+                <Button variant="primary">Find LED name</Button>
+                <Button variant="danger">Delete name</Button>
+              </ButtonGroup>
             </InputGroup>
 
             <InputGroup className="mb-3">
@@ -533,6 +560,38 @@ class Generator extends React.Component {
           </Tab>
           <Tab eventKey="export-or-import-data" title="Export/Import Data">
             <Alert variant="secondary">This does xyz</Alert>
+            <InputGroup className="mb-3">
+                <InputGroup.Prepend>
+                  <InputGroup.Text>EXPORT DATA TO JSON FILE</InputGroup.Text>
+                </InputGroup.Prepend>
+              <Button onClick={this.handleExport} variant="primary">Export</Button>{' '}
+            </InputGroup>
+
+            <InputGroup className="mb-3">
+                <InputGroup.Prepend>
+                  <InputGroup.Text>IMPORT DATA FROM JSON FILE</InputGroup.Text>
+                </InputGroup.Prepend>
+                <Form>
+                  <Form.File 
+                    id="custom-file"
+                    label="Custom file input"
+                    custom
+                  />
+                </Form>
+                <div class="col-sm-12 mt-5">
+                  <h3>bs-custom-file-input Example</h3>
+                  <div class="input-group mt-3">
+                    <div class="custom-file">
+                      <input id="inputGroupFile01" type="file" class="custom-file-input"/ >
+                      <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                    </div>
+                  </div>
+                </div>
+                </InputGroup>
+
+              {/* <Button type="file" onChange={this.handleImport} variant="primary">Import JSON</Button>{' '} */}
+
+
           </Tab>
         </Tabs>
         <br />
