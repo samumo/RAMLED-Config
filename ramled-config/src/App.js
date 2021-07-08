@@ -11,8 +11,7 @@ import Alert from 'react-bootstrap/Alert';
 import Table from 'react-bootstrap/Table';
 import { saveAs } from 'file-saver';
 import Form from 'react-bootstrap/Form';
-import bsCustomFileInput from 'bs-custom-file-input'
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 //  document.body.style = 'background: black;';
 
