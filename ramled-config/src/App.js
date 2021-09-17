@@ -13,6 +13,7 @@ import { saveAs } from 'file-saver';
 import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 //  document.body.style = 'background: black;';
 
 
@@ -26,7 +27,8 @@ class Generator extends React.Component {
       previousJsonData: ["b-01-01", "b-01-02", "b-01-03"],
       blockInput: {name: "a-01-01", numToAdd: 1, startNum: 0},
       sequenceInput: {startNum: 0, building: 'a', floorStart: 1, floorEnd: 7, apartmentSequence: ['01','02','03','04']},
-      testImport: []
+      testImport: [],
+      importedJson: [],
     }
     // Bindings
     this.handleChangeName = this.handleChangeName.bind(this);
@@ -420,9 +422,21 @@ class Generator extends React.Component {
     saveAs(blob, "config.json");
   }
 
+
   handleImport(event){
-    const fileList = event.target.files;
-    this.setState({testImport: fileList})
+    if (event.target.files) {
+      console.log(event.target.files[0]);
+      const file = event.target.files[0];
+      console.log(JSON.parse(file));
+      this.setState({
+        importedJson: file
+      });
+      // console.log(this.state.importedJson)
+      // const importedJson = JSON.parse(file);
+      // console.log(file);
+    }
+    // const fileList = event.target.files;
+    // this.setState({testImport: fileList})
   }
 
   render() {
@@ -560,24 +574,40 @@ class Generator extends React.Component {
           <Tab eventKey="export-or-import-data" title="Export/Import Data">
             <Alert variant="secondary">This does xyz</Alert>
             <InputGroup className="mb-3">
-                <InputGroup.Prepend>
-                  <InputGroup.Text>EXPORT DATA TO JSON FILE</InputGroup.Text>
-                </InputGroup.Prepend>
+              <InputGroup.Prepend>
+                <InputGroup.Text>EXPORT DATA TO JSON FILE</InputGroup.Text>
+              </InputGroup.Prepend>
               <Button onClick={this.handleExport} variant="primary">Export</Button>{' '}
             </InputGroup>
 
+{/* 
+
+WIP
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+*/}
             <InputGroup className="mb-3">
                 <InputGroup.Prepend>
                   <InputGroup.Text>IMPORT DATA FROM JSON FILE</InputGroup.Text>
-                </InputGroup.Prepend>
-                <Form>
-                  <Form.File 
-                    id="custom-file"
-                    label="Custom file input"
+                  {/* <Form.Label>Default file input example</Form.Label> */}
+                  
+                </InputGroup.Prepend> 
+                  {/* <Button onClick={this.handleExport} variant="primary">Import</Button>{' '} */}
+                  {/* react-bootrap boilerplate */}
+                  {/* <Form.Control type="file" />  */}
+                  <Form.File
                     custom
+                    onChange={this.handleImport}
                   />
-                </Form>
-                <div class="col-sm-12 mt-5">
+
+                </InputGroup>
+
+                {/* <div class="col-sm-12 mt-5">
                   <h3>bs-custom-file-input Example</h3>
                   <div class="input-group mt-3">
                     <div class="custom-file">
@@ -585,8 +615,8 @@ class Generator extends React.Component {
                       <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
                     </div>
                   </div>
-                </div>
-                </InputGroup>
+                </div> */}
+                
 
               {/* <Button type="file" onChange={this.handleImport} variant="primary">Import JSON</Button>{' '} */}
 
