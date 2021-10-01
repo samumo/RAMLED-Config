@@ -120,7 +120,7 @@ class Generator extends React.Component {
   // Method to update state 'jsonData' to include new block name(s)
   handleExecuteBlock(event) {
     // This call prevents the submit button's default behaviour of reloading the page
-    event.preventDefault()
+    event.preventDefault();
     // Deep working copy of state 'jsonData'
     let nameArray = [...this.state.jsonData];
     // copy of state block input object 
@@ -422,21 +422,20 @@ class Generator extends React.Component {
     saveAs(blob, "config.json");
   }
 
-
-  handleImport(event){
-    if (event.target.files) {
-      console.log(event.target.files[0]);
-      const file = event.target.files[0];
-      console.log(JSON.parse(file));
-      this.setState({
-        importedJson: file
-      });
-      // console.log(this.state.importedJson)
-      // const importedJson = JSON.parse(file);
-      // console.log(file);
+  handleImport(event) {
+    let fileReader = new FileReader();
+    let output = [];
+    fileReader.onload = function(event) {
+      const input = JSON.parse(event.target.result);
+      input.forEach(item => output.push(item.name));
     }
-    // const fileList = event.target.files;
-    // this.setState({testImport: fileList})
+    let file = event.target.files[0];
+    fileReader.readAsText(file);
+    
+    this.setState({
+        previousJsonData: [...this.state.jsonData],
+        jsonData: output,
+      });
   }
 
   render() {
